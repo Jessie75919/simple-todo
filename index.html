@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 800px;
+            background: #698a87;
+        }
+
+        .main {
+            width: 70%;
+            min-height: 600px;
+            background: rgb(255, 228, 233);
+            border-radius: 10px;
+            padding: 20px 10px;
+        }
+
+        .input {
+            padding: 10px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .input input {
+            width: 50%;
+            outline: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 34px;
+            padding: 12px;
+            text-align: center;
+            color: #547394;
+        }
+
+        .input input::placeholder {
+            color: #ddd;
+        }
+
+        .input .todo-btn {
+            padding: 20px;
+            background: pink;
+            border-radius: 20px;
+            border: none;
+            width: 100px;
+            font-size: 24px;
+            margin-left: 10px;
+            color: #fff;
+            outline: none;
+            font-weight: bold;
+        }
+
+        .input .todo-btn:hover {
+            cursor: pointer;
+            background: rgb(255, 158, 174);
+        }
+
+        .todos ul li {
+            list-style: none;
+            padding: 20px;
+            background: #97bfd2;
+            font-size: 25px;
+            width: 90%;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .todos ul li input[type=checkbox] {
+            transform: scale(2);
+            top: -2px;
+            position: relative;
+            margin-right: 10px;
+        }
+
+        .todos ul li span {
+            margin-left: 6px;
+        }
+
+        .done {
+            background: #ddd !important;
+        }
+
+        .done span {
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        .delIcon {
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            cursor: pointer;
+
+        }
+
+        .delIcon:hover {
+            color: pink;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="input">
+                <input type="text" id="todo-input" placeholder="Learn javascript ">
+                <button class="todo-btn" id="todo-btn"> Add </button>
+            </div>
+            <div class="todos">
+                <ul>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        const todos = [];
+
+        function renderTodos() {
+            const ul = document.querySelector('.todos ul');
+            ul.innerHTML = '';
+
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+
+                li.appendChild(createCheckbox(todo, li))
+                li.appendChild(createText(todo))
+                li.appendChild(createDeleteButton(index))
+
+                ul.appendChild(li);
+            });
+        }
+
+        function createText(todo) {
+            const txt = document.createElement('span');
+            txt.innerHTML = todo.text;
+            return txt;
+        }
+
+        function createDeleteButton(index) {
+            const delIcon = document.createElement('i');
+            delIcon.className = 'fa fa-times delIcon';
+            delIcon.dataset.index = index;
+
+            delIcon.addEventListener('click', function (e) {
+                const index = this.dataset.index;
+                if (!confirm('Are you sure to remove this todo?')) {
+                    return;
+                }
+
+                todos.splice(index, 1);
+                renderTodos();
+            });
+
+            return delIcon;
+        }
+
+        function createCheckbox(todo, li) {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            addCheckboxCheckedEvent(checkbox, li);
+            checkbox.checked = todo.isDone
+            return checkbox;
+        }
+
+        function addCheckboxCheckedEvent(checkbox, li) {
+            checkbox.addEventListener('change', function (e) {
+                if (this.checked) {
+                    li.classList.add('done');
+                } else {
+                    li.classList.remove('done');
+                }
+            });
+        }
+
+        function createTodo(text) {
+            const todoInput = document.getElementById('todo-input');
+            todoInput.value = '';
+            todos.push({ text, isDone: false });
+            renderTodos();
+        }
+
+        function initInputs() {
+            const todoInput = document.getElementById('todo-input');
+            todoInput.addEventListener('keydown', function (event) {
+                if (!this.value) {
+                    return;
+                }
+
+                if (event.key === 'Enter') {
+                    createTodo(this.value);
+                }
+            });
+
+            todoInput.focus();
+
+            const todoBtn = document.getElementById('todo-btn');
+            todoBtn.addEventListener('click', function (event) {
+                if (!todoInput.value) {
+                    return;
+                }
+                createTodo(todoInput.value);
+            });
+        }
+
+
+        initInputs();
+        renderTodos();
+
+    </script>
+</body>
+
+</html>
