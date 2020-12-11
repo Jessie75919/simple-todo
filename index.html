@@ -15,8 +15,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 800px;
+            min-height: 800px;
             background: #698a87;
+            padding: 30px;
         }
 
         .main {
@@ -191,7 +192,7 @@
         function createTodo(text) {
             const todoInput = document.getElementById('todo-input');
             todoInput.value = '';
-            todos.push({ text, isDone: false });
+            todos.unshift({ text, isDone: false });
             renderTodos();
         }
 
