@@ -113,6 +113,11 @@
         .delIcon:hover {
             color: pink;
         }
+
+        .onDrag{
+            background: rgb(212, 114, 114) !important;
+            position: absolute !important;
+        }
     </style>
 </head>
 
@@ -123,7 +128,7 @@
                 <input type="text" id="todo-input" placeholder="Learn javascript ">
                 <button class="todo-btn" id="todo-btn"> Add </button>
             </div>
-            <div class="todos">
+            <div class="todos" id="todo-container">
                 <ul>
                 </ul>
             </div>
@@ -131,6 +136,42 @@
     </div>
     <script>
         const todos = [];
+        let dragoverIdx, dragTodo;
+        handleDropEvt();
+
+        function handleDropEvt(){
+            const container = document.getElementById('todo-container');
+            container.addEventListener('dragover', function (e) {
+                e.preventDefault();
+            });
+
+            container.addEventListener('drop', function (e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                const id = e.dataTransfer.getData('text/plain');
+                todos.splice(dragoverIdx, 0 , dragTodo);
+                renderTodos();
+            });
+        }
+
+        function setDragEvt(li, index) {
+            li.addEventListener('dragstart', function (e) {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", this.id);
+                this.classList.add('onDrag');
+                dragTodo = todos[this.id];
+                todos.splice(this.id, 1);
+            });
+
+            li.addEventListener('dragover', function (e) {
+                dragoverIdx = this.id;
+                console.log(dragoverIdx);
+            });
+
+            li.addEventListener('dragend', function (e) {
+                this.classList.remove('onDrag');
+            });
+        }
 
         function renderTodos() {
             const ul = document.querySelector('.todos ul');
@@ -138,12 +179,15 @@
 
             todos.forEach((todo, index) => {
                 const li = document.createElement('li');
-
+                li.id = index
+                li.draggable = true;
                 li.appendChild(createCheckbox(todo, li))
                 li.appendChild(createText(todo))
                 li.appendChild(createDeleteButton(index))
-
+                
                 ul.appendChild(li);
+                
+                setDragEvt(li);
             });
         }
 
